@@ -1,16 +1,17 @@
 package http
 
 import (
-	"algogrit.com/emp_server/employees/service"
 	"github.com/gorilla/mux"
+
+	"algogrit.com/emp_server/employees/service"
 )
 
 type EmployeeHandler struct {
-	*mux.Router
-	svcV1 service.EmployeeService
+	*mux.Router // Embedding => Inheritance
+	svcV1       service.EmployeeService
 }
 
-func (h EmployeeHandler) SetupRoutes(r *mux.Router) {
+func (h *EmployeeHandler) SetupRoutes(r *mux.Router) {
 	h.Router = r
 
 	r.HandleFunc("/v1/employees", h.indexV1).Methods("GET")

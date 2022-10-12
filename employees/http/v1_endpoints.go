@@ -19,7 +19,6 @@ func (h EmployeeHandler) indexV1(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(emps)
-
 }
 
 func (h EmployeeHandler) createV1(w http.ResponseWriter, req *http.Request) {
