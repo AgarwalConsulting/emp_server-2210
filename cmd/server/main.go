@@ -1,6 +1,7 @@
 package main
 
 import (
+	// "flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,7 +15,19 @@ import (
 	"algogrit.com/emp_server/employees/service"
 )
 
+func GetEnvOrDefault(key, dflt string) string {
+	val, ok := os.LookupEnv(key)
+
+	if !ok {
+		return dflt
+	}
+
+	return val
+}
+
 func main() {
+	port := GetEnvOrDefault("PORT", "3000")
+
 	r := mux.NewRouter()
 
 	r.HandleFunc("/hello", func(w http.ResponseWriter, req *http.Request) {
@@ -29,6 +42,6 @@ func main() {
 
 	empHandler.SetupRoutes(r)
 
-	log.Println("Starting server on port: 3000...")
-	http.ListenAndServe("localhost:3000", handlers.LoggingHandler(os.Stdout, r))
+	log.Println("Starting server on port:", port, "...")
+	log.Fatalln(http.ListenAndServe(":"+port, handlers.LoggingHandler(os.Stdout, r)))
 }
