@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	// "reflect"
@@ -56,13 +58,17 @@ func EmployeeCreateHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(newEmp)
 }
 
-// func EmployeesHandler(w http.ResponseWriter, req *http.Request) {
-// 	if req.Method == "POST" {
-// 		EmployeeCreateHandler(w, req)
-// 	} else {
-// 		EmployeesIndexHandler(w, req)
-// 	}
-// }
+func LoggingMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		begin := time.Now()
+
+		next.ServeHTTP(w, req)
+
+		log.Printf("%s %s took %s\n", req.Method, req.URL, time.Since(begin))
+	}
+
+	return http.HandlerFunc(fn)
+}
 
 func main() {
 	// http.DefaultServeMux
@@ -82,5 +88,6 @@ func main() {
 	r.HandleFunc("/employees", EmployeeCreateHandler).Methods("POST")
 
 	// http.ListenAndServe("localhost:3000", nil)
-	http.ListenAndServe("localhost:3000", r)
+	// http.ListenAndServe("localhost:3000", r)
+	http.ListenAndServe("localhost:3000", LoggingMiddleware(r))
 }
