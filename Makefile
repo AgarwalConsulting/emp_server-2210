@@ -1,3 +1,6 @@
 ci-test:
 	go generate ./...
 	go test -v -race ./...
+
+fuzz-test:
+	go test -fuzz=FuzzCreateV1 ./employees/http
