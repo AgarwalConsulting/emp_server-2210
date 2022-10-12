@@ -13,12 +13,15 @@ import (
 	"algogrit.com/emp_server/entities"
 
 	"algogrit.com/emp_server/employees/repository"
+	"algogrit.com/emp_server/employees/service"
 )
 
 var empRepo = repository.NewInMem()
+var empSvc = service.NewV1(empRepo)
 
 func EmployeesIndexHandler(w http.ResponseWriter, req *http.Request) {
-	emps, err := empRepo.ListAll(req.Context())
+	// emps, err := empRepo.ListAll(req.Context())
+	emps, err := empSvc.Index(req.Context())
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -40,7 +43,8 @@ func EmployeeCreateHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	savedEmp, err := empRepo.Save(req.Context(), newEmp)
+	// savedEmp, err := empRepo.Save(req.Context(), newEmp)
+	savedEmp, err := empSvc.Create(req.Context(), newEmp)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
