@@ -9,23 +9,11 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	// "reflect"
+
+	"algogrit.com/emp_server/entities"
 )
 
-type Employee struct { // Struct Tags
-	ID         int    `json:"-"`
-	Name       string `json:"name"`
-	Department string `json:"speciality"`
-	ProjectID  int    `json:"project"`
-}
-
-// func (e Employee) MarshalJSON() ([]byte, error) {
-// 	jsonString := fmt.Sprintf(`{"name": "%s", "speciality": "%s", "project": %d}`, e.Name, e.Department, e.ProjectID)
-
-// 	return []byte(jsonString), nil
-// }
-
-var employees = []Employee{
+var employees = []entities.Employee{
 	{1, "Gaurav", "LnD", 1001},
 	{2, "Senthil", "Cloud", 10002},
 	{3, "Sonali", "SRE", 10010},
@@ -34,15 +22,11 @@ var employees = []Employee{
 func EmployeesIndexHandler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(employees)
-
-	// encoder := json.NewEncoder(w)
-	// encoder.Encode(employees)
-	// fmt.Fprintln(w, employees)
 }
 
 func EmployeeCreateHandler(w http.ResponseWriter, req *http.Request) {
 	// req.Body
-	var newEmp Employee
+	var newEmp entities.Employee
 	err := json.NewDecoder(req.Body).Decode(&newEmp)
 
 	if err != nil {
@@ -59,49 +43,18 @@ func EmployeeCreateHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(newEmp)
 }
 
-// func LoggingMiddleware(next http.Handler) http.Handler {
-// 	fn := func(w http.ResponseWriter, req *http.Request) {
-// 		// reqCtx := req.Context()
-
-// 		// reqCtx = context.WithValue(reqCtx, "somekey", "somevalue")
-
-// 		begin := time.Now()
-
-// 		// reqWithVal := req.WithContext(reqCtx)
-
-// 		// next.ServeHTTP(w, reqWithVal)
-// 		// if user.loggedIn {
-// 		next.ServeHTTP(w, req)
-// 		// } else {
-// 		// 	w.WriteHeader(http.StatusUnauthorized)
-// 		// }
-
-// 		log.Printf("%s %s took %s\n", req.Method, req.URL, time.Since(begin))
-// 	}
-
-// 	return http.HandlerFunc(fn)
-// }
-
 func main() {
-	// http.DefaultServeMux
-	// r := http.NewServeMux()
 	r := mux.NewRouter()
 
-	// http.HandleFunc
 	r.HandleFunc("/hello", func(w http.ResponseWriter, req *http.Request) {
 		msg := "Hello, World!" // Type: string
 
-		// w.Write([]byte(msg))
 		fmt.Fprintln(w, msg)
 	})
 
-	// r.HandleFunc("/employees", EmployeesHandler)
 	r.HandleFunc("/employees", EmployeesIndexHandler).Methods("GET")
 	r.HandleFunc("/employees", EmployeeCreateHandler).Methods("POST")
 
-	// http.ListenAndServe("localhost:3000", nil)
-	// http.ListenAndServe("localhost:3000", r)
-	// http.ListenAndServe("localhost:3000", LoggingMiddleware(r))
 	log.Println("Starting server on port: 3000...")
 	http.ListenAndServe("localhost:3000", handlers.LoggingHandler(os.Stdout, r))
 }
