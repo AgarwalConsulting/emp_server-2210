@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -101,5 +102,6 @@ func main() {
 	// http.ListenAndServe("localhost:3000", nil)
 	// http.ListenAndServe("localhost:3000", r)
 	// http.ListenAndServe("localhost:3000", LoggingMiddleware(r))
+	log.Println("Starting server on port: 3000...")
 	http.ListenAndServe("localhost:3000", handlers.LoggingHandler(os.Stdout, r))
 }
