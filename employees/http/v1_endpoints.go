@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
+
 	"algogrit.com/emp_server/entities"
 )
 
@@ -23,11 +25,23 @@ func (h EmployeeHandler) indexV1(w http.ResponseWriter, req *http.Request) {
 
 func (h EmployeeHandler) createV1(w http.ResponseWriter, req *http.Request) {
 	var newEmp entities.Employee
-	err := json.NewDecoder(req.Body).Decode(&newEmp)
+	decoder := json.NewDecoder(req.Body)
 
-	if err != nil {
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&newEmp)
+
+	validate := validator.New()
+
+	errs := validate.Struct(newEmp)
+
+	if err != nil || errs != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, err)
+
+		if err != nil {
+			fmt.Fprintln(w, err)
+		} else {
+			fmt.Fprintln(w, errs)
+		}
 		return
 	}
 
