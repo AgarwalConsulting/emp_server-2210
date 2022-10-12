@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-	"time"
+	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	// "reflect"
 )
@@ -58,17 +58,28 @@ func EmployeeCreateHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(newEmp)
 }
 
-func LoggingMiddleware(next http.Handler) http.Handler {
-	fn := func(w http.ResponseWriter, req *http.Request) {
-		begin := time.Now()
+// func LoggingMiddleware(next http.Handler) http.Handler {
+// 	fn := func(w http.ResponseWriter, req *http.Request) {
+// 		// reqCtx := req.Context()
 
-		next.ServeHTTP(w, req)
+// 		// reqCtx = context.WithValue(reqCtx, "somekey", "somevalue")
 
-		log.Printf("%s %s took %s\n", req.Method, req.URL, time.Since(begin))
-	}
+// 		begin := time.Now()
 
-	return http.HandlerFunc(fn)
-}
+// 		// reqWithVal := req.WithContext(reqCtx)
+
+// 		// next.ServeHTTP(w, reqWithVal)
+// 		// if user.loggedIn {
+// 		next.ServeHTTP(w, req)
+// 		// } else {
+// 		// 	w.WriteHeader(http.StatusUnauthorized)
+// 		// }
+
+// 		log.Printf("%s %s took %s\n", req.Method, req.URL, time.Since(begin))
+// 	}
+
+// 	return http.HandlerFunc(fn)
+// }
 
 func main() {
 	// http.DefaultServeMux
@@ -89,5 +100,6 @@ func main() {
 
 	// http.ListenAndServe("localhost:3000", nil)
 	// http.ListenAndServe("localhost:3000", r)
-	http.ListenAndServe("localhost:3000", LoggingMiddleware(r))
+	// http.ListenAndServe("localhost:3000", LoggingMiddleware(r))
+	http.ListenAndServe("localhost:3000", handlers.LoggingHandler(os.Stdout, r))
 }
